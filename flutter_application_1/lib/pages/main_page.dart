@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/all_tasks.dart';
 import 'package:flutter_application_1/screens/profile.dart';
 
 class MainPage extends StatefulWidget {
@@ -11,7 +12,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Задачи'),
+    TasksPage(),
     Text('Сегодня'),
     Text('Выполнено'),
     ProfilePage(),
