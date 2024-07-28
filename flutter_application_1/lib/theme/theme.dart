@@ -10,11 +10,11 @@ class DoDidDoneTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all<Color>(Colors.white) ,
-        textStyle: MaterialStateProperty.all<TextStyle>(
-          const TextStyle(color: Colors.white),
+        // ignore: deprecated_member_use
+        backgroundColor: MaterialStateProperty.all<Color>(
+          const Color(0xFF4ceb8b), // Цвет фона кнопок
         ),
-      ),
+    ),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       selectedItemColor: const Color(0xFF9f7bf6), // Цвет выбранной иконки
