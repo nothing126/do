@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/theme.dart';
-import 'main_page.dart';
+import 'package:flutter_application_1/pages/main_page.dart'; // Import MainPage
+
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(width: 8),
                   // Добавляем текст "zerocoder"
-                  Text(
+                  const Text(
                     'zerocoder',
                     style: TextStyle(
                       fontSize: 62,
@@ -135,13 +136,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               const SizedBox(height: 30),
               // Кнопка "Войти"
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainPage()));
-                },
+             ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainPage())); // Now it works
+                  },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: !isLogin
                       ? DoDidDoneTheme.lightTheme.colorScheme.primary
@@ -155,6 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: Text(isLogin ? 'Войти' : 'Зарегистрироваться'),
               ),
+              
               const SizedBox(height: 20),
               // Кнопка перехода на другую страницу
               TextButton(
