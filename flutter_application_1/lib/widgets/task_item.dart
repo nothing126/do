@@ -47,8 +47,8 @@ class TaskItem extends StatelessWidget {
                 colors: [gradientStart, Colors.white],
               ),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
             child: Row(

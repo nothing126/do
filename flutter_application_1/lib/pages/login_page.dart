@@ -10,6 +10,12 @@ class LoginPage extends StatefulWidget {
 }
 class _LoginPageState extends State<LoginPage> {
   bool isLogin = true; // Флаг для определения режима (вход/регистрация)
+@override
+  void initState() {
+    super.initState();
+    isLogin = true; // Initialize isLogin to true
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,23 +41,11 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/0qode_symbol_1.png', // Замените на правильный путь к файлу
-                    height: 60, // Устанавливаем высоту изображения
-                  ),
-                  const SizedBox(width: 8),
-                  // Добавляем текст "zerocoder"
-                  const Text(
-                    'zerocoder',
-                    style: TextStyle(
-                      fontSize: 62,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Белый цвет текста
-                    ),
-                  ),
+
+                  
                 ],
               ),
               const SizedBox(height: 30),
@@ -137,12 +131,12 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 30),
               // Кнопка "Войти"
              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainPage())); // Now it works
-                  },
+          onPressed: () {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MainPage())); // Now it works
+          },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: !isLogin
                       ? DoDidDoneTheme.lightTheme.colorScheme.primary
@@ -156,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: Text(isLogin ? 'Войти' : 'Зарегистрироваться'),
               ),
-              
               const SizedBox(height: 20),
               // Кнопка перехода на другую страницу
               TextButton(
