@@ -41,10 +41,23 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Row(
+               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
+                    Image.asset(
+                    'assets/0qode_symbol_1.png', // Замените на правильный путь к файлу
+                    height: 50, // Устанавливаем высоту изображения
+                  ),
+                   const SizedBox(width: 7),
+                  // Добавляем текст "zerocoder"
+                  const Text(
+                    'zerocoder',
+                    style: TextStyle(
+                      fontSize: 62,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Белый цвет текста
+                    ),
+                  ),
                   
                 ],
               ),
