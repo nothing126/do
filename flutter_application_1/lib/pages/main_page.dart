@@ -1,8 +1,14 @@
+// ignore_for_file: unused_local_variable, no_leading_underscores_for_local_identifiers, use_super_parameters
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/all_tasks.dart';
+import 'package:flutter_application_1/screens/completed.dart';
+import 'package:flutter_application_1/screens/for_today.dart';
 import 'package:flutter_application_1/screens/profile.dart';
-import 'package:flutter_application_1/theme/theme.dart'; // Import theme
-import 'package:intl/intl.dart'; // Импортируем пакет intl
+import 'package:flutter_application_1/theme/theme.dart';
+import 'package:flutter_application_1/widgets/dialog_widget.dart';
+import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -13,11 +19,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
   static const List<Widget> _widgetOptions = <Widget>[
     TasksPage(),
-    Text('Сегодня'),
-    Text('Выполнено'),
-    ProfilePage(),
+    ForTodayPage(),
+    CompletedPage(),
+    ProfilePage(), // Используем ProfilePage для 4-го элемента
   ];
 
   void _onItemTapped(int index) {
@@ -26,104 +33,42 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  // Функция для добавления новой задачи
-  void _addNewTask() {
+void _showAddTaskDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        // Переменные для хранения данных новой задачи
-        String title = '';
-        String description = '';
-        DateTime deadline = DateTime.now();
+      builder: (context) {
+        String _title = '';
+        String _description = '';
+        DateTime _deadline = DateTime.now();
 
-        return Dialog( // Используем Dialog вместо AlertDialog
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16), // Добавляем скругленные углы
-          ),
-          child: Container(
-            width: 400, // Устанавливаем ширину диалога
-            padding: const EdgeInsets.all(20), // Добавляем отступ
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Поле для ввода названия задачи
-                TextField(
-                  onChanged: (value) {
-                    title = value;
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Название задачи',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Поле для ввода описания задачи
-                TextField(
-                  onChanged: (value) {
-                    description = value;
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Описание задачи',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Виджет для выбора дедлайна
-                Padding( // Добавляем отступ для кнопки
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Открываем диалог выбора даты и времени
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2100),
-                      ).then((pickedDate) {
-                        if (pickedDate == null) return;
-                        // Открываем диалог выбора времени
-                        showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(pickedDate), // Используем выбранную дату для начального времени
-                        ).then((pickedTime) {
-                          if (pickedTime == null) return;
-                          // Собираем дату и время
-                          deadline = DateTime(
-                            pickedDate.year,
-                            pickedDate.month,
-                            pickedDate.day,
-                            pickedTime.hour,
-                            pickedTime.minute,
-                          );
-                        });
-                      });
-                    },
-                    child: const Text('Выбрать дедлайн'),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return DialogWidget(
+          title: _title,
+          description: _description,
+          deadline: _deadline,
         );
       },
     );
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Colors.transparent, // Прозрачный AppBar
+        elevation: 0, // Убираем тень
       ),
-      body: Container( // Wrap the body with Container
+      body: Container(
+        // Добавляем Container для градиента
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            end: Alignment.bottomCenter,
             colors: [
-              DoDidDoneTheme.lightTheme.colorScheme.primary,
               DoDidDoneTheme.lightTheme.colorScheme.secondary,
+              DoDidDoneTheme.lightTheme.colorScheme.primary,
             ],
+            stops: const [0.1, 0.9], // Основной цвет занимает 90%
           ),
         ),
         child: Center(
@@ -133,7 +78,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.task_alt),
+            icon: Icon(Icons.list),
             label: 'Задачи',
           ),
           BottomNavigationBarItem(
@@ -141,20 +86,19 @@ class _MainPageState extends State<MainPage> {
             label: 'Сегодня',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
             label: 'Выполнено',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Профиль',
           ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      // Добавляем плавающую кнопку
       floatingActionButton: FloatingActionButton(
-        onPressed: _addNewTask,
+        onPressed: _showAddTaskDialog,
         child: const Icon(Icons.add),
       ),
     );
