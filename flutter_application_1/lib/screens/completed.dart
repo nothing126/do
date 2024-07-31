@@ -5,25 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import '../widgets/task_item.dart';
 
-class TasksPage extends StatefulWidget {
+class CompletedPage extends StatefulWidget {
   // ignore: use_super_parameters
-  const TasksPage({Key? key}) : super(key: key);
+  const CompletedPage({Key? key}) : super(key: key);
 
   @override
-  State<TasksPage> createState() => _TasksPageState();
+  State<CompletedPage> createState() => _TasksPageState();
 }
 
-class _TasksPageState extends State<TasksPage> {
+class _TasksPageState extends State<CompletedPage> {
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.
-      where('completed', isEqualTo: false)
-      .where('is_for_today', isEqualTo: false)
-      .snapshots(),
+      stream: _tasksCollection.where('completed', isEqualTo: true).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));
@@ -32,7 +29,7 @@ class _TasksPageState extends State<TasksPage> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-       
+
         final tasks = snapshot.data!.docs;
 
         if (tasks.isEmpty) {
@@ -53,18 +50,18 @@ class _TasksPageState extends State<TasksPage> {
             return TaskItem(
               title: taskTitle,
               description: taskDescription,
-              deadline: taskDeadline ?? DateTime.now(),
+              deadline: taskDeadline,
              // Добавьте другие поля из вашей коллекции tasks
              toLeft: (){
                 _tasksCollection
                   .doc(tasks[index].id)
-                  .update({'completed': true});
+                  .update({'is_for_today': true, 'completed': false});
              },
 
              toRight: (){
-                  _tasksCollection
+               _tasksCollection
                   .doc(tasks[index].id)
-                  .update({'is_for_today': true});
+                  .update({'is_for_day': false ,'completed': false});
              },
 
              onEdit: (){
