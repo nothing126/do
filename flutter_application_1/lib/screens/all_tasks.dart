@@ -1,8 +1,9 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unnecessary_import
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/widgets/dialog_widget.dart';
 import '../widgets/task_item.dart';
 
 class TasksPage extends StatefulWidget {
@@ -53,7 +54,7 @@ class _TasksPageState extends State<TasksPage> {
             return TaskItem(
               title: taskTitle,
               description: taskDescription,
-              deadline: taskDeadline ?? DateTime.now(),
+              deadline: taskDeadline,
              // Добавьте другие поля из вашей коллекции tasks
              toLeft: (){
                 _tasksCollection
@@ -68,7 +69,17 @@ class _TasksPageState extends State<TasksPage> {
              },
 
              onEdit: (){
-
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return DialogWidget(
+                      taskId: tasks[index].id,
+                      title: taskTitle,
+                      description: taskDescription,
+                      deadline: taskDeadline,
+        );
+      },
+    );
              },
 
              onDelete: (){

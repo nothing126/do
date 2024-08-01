@@ -7,134 +7,147 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DialogWidget extends StatefulWidget {
-  const DialogWidget({super.key, this.description, this.deadline, this.title});
+  const DialogWidget({
+    super.key,
+    this.description,
+    this.deadline,
+    this.title,
+    this.taskId, // ID задачи для редактирования
+  });
 
   final String? description;
   final DateTime? deadline;
   final String? title;
+  final String? taskId; // ID задачи для редактирования
 
   @override
   State<DialogWidget> createState() => _DialogWidgetState();
 }
 
 class _DialogWidgetState extends State<DialogWidget> {
-  String? _description = ' ';
-  DateTime? _deadline ;
-  String? _title = ' ';
-  
-@override
+  String? _title;
+  String? _description;
+  DateTime? _deadline;
+
+  @override
   void initState() {
     super.initState();
+    _title = widget.title;
     _description = widget.description;
     _deadline = widget.deadline;
-    _title = widget.title;
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-          // Используем Dialog вместо AlertDialog для настройки ширины
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16), // Скругленные углы
-          ),
-          child: SizedBox(
-            width: 400, // Устанавливаем ширину диалога
-            child: Padding(
-              padding: const EdgeInsets.all(20.0), // Отступ для содержимого
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    decoration: const InputDecoration(labelText: 'Название'),
-                    onChanged: (value) {
-                      _title = value;
-                    },
-                  ),
-                  TextField(
-                    decoration: const InputDecoration(labelText: 'Описание'),
-                    onChanged: (value) {
-                      _description = value;
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0), // Отступ сверху
-                    child: Row(
-                      children: [
-                        Text(
-                          'Дедлайн: ${DateFormat('dd.MM.yy HH:mm').format(_deadline ?? DateTime.now())}',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(width: 16), // Отступ между текстом и кнопкой
-                        IconButton(
-                          onPressed: () {
-                            // Открыть календарь для выбора даты и времени
-                            showDatePicker(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: SizedBox(
+        width: 400,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Название'),
+                controller: TextEditingController(text: _title),
+                onChanged: (value) {
+                  _title = value;
+                },
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Описание'),
+                controller: TextEditingController(text: _description),
+                onChanged: (value) {
+                  _description = value;
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Дедлайн: ${DateFormat('dd.MM.yy HH:mm').format(_deadline ?? DateTime.now())}',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      onPressed: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: _deadline ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        ).then((pickedDate) {
+                          if (pickedDate != null) {
+                            showTimePicker(
                               context: context,
-                              initialDate: _deadline,
-                              firstDate: DateTime.now(),
-                              lastDate:
-                                  DateTime.now().add(const Duration(days: 365)),
-                            ).then((pickedDate) {
-                              if (pickedDate != null) {
-                                // После выбора даты, открыть TimePicker
-                                showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.fromDateTime(_deadline ?? DateTime.now()),
-                                ).then((pickedTime) {
-                                  if (pickedTime != null) {
-                                    setState(() {
-                                      _deadline = DateTime(
-                                        pickedDate.year,
-                                        pickedDate.month,
-                                        pickedDate.day,
-                                        pickedTime.hour,
-                                        pickedTime.minute,
-                                      );
-                                    });
-                                  }
+                              initialTime: TimeOfDay.fromDateTime(_deadline ?? DateTime.now()),
+                            ).then((pickedTime) {
+                              if (pickedTime != null) {
+                                setState(() {
+                                  _deadline = DateTime(
+                                    pickedDate.year,
+                                    pickedDate.month,
+                                    pickedDate.day,
+                                    pickedTime.hour,
+                                    pickedTime.minute,
+                                  );
                                 });
                               }
                             });
-                          },
-                          icon: const Icon(Icons.calendar_today),
-                        ),
-                      ],
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.calendar_today),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Отмена'),
                   ),
-                  const SizedBox(height: 20), // Отступ снизу
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Отмена'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final tasksCollection =
-                              FirebaseFirestore.instance.collection("tasks");
-                          await tasksCollection.add({
-                            'title': _title,
-                            'description': _description,
-                            'deadline': _deadline,
-                            'completed': false,
-                            'is_for_today': false,
-                          });
+                  TextButton(
+                    onPressed: () async {
+                      final tasksCollection =
+                          FirebaseFirestore.instance.collection("tasks");
 
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Добавить'),
-                      ),
-                    ],
+                      if (widget.taskId != null) {
+                        // Редактирование существующей задачи
+                        await tasksCollection.doc(widget.taskId).update({
+                          'title': _title,
+                          'description': _description,
+                          'deadline': _deadline,
+                        });
+                      } else {
+                        // Создание новой задачи
+                        await tasksCollection.add({
+                          'title': _title,
+                          'description': _description,
+                          'deadline': _deadline,
+                          'completed': false,
+                          'is_for_today': false,
+                        });
+                      }
+
+                      Navigator.pop(context);
+                    },
+                    child: Text(widget.taskId != null ? 'Сохранить' : 'Добавить'),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-        );
+        ),
+      ));
   }
 }

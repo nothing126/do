@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/profile_page.dart';
 import 'package:flutter_application_1/screens/all_tasks.dart';
 import 'package:flutter_application_1/screens/completed.dart';
 import 'package:flutter_application_1/screens/for_today.dart';
@@ -24,7 +25,7 @@ class _MainPageState extends State<MainPage> {
     TasksPage(),
     ForTodayPage(),
     CompletedPage(),
-    ProfilePage(), // Используем ProfilePage для 4-го элемента
+    //ProfilePage(), // Используем ProfilePage для 4-го элемента
   ];
 
   void _onItemTapped(int index) {
@@ -56,7 +57,13 @@ void _showAddTaskDialog() {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Прозрачный AppBar
-        elevation: 0, // Убираем тень
+        elevation: 0, 
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+          }, 
+          icon: const Icon(Icons.person_2), color: Colors.white,)
+        ],// Убираем тень
       ),
       body: Container(
         // Добавляем Container для градиента
@@ -88,10 +95,6 @@ void _showAddTaskDialog() {
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
             label: 'Выполнено',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
           ),
         ],
         currentIndex: _selectedIndex,
