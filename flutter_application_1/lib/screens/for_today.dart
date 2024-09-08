@@ -1,8 +1,9 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unnecessary_import
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/services/firebase_auth.dart';
 import '../widgets/task_item.dart';
 
 class ForTodayPage extends StatefulWidget {
@@ -14,14 +15,16 @@ class ForTodayPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<ForTodayPage> {
-  final CollectionReference _tasksCollection =
+    final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
-
+     final _authService = AuthenticationService();
   @override
   Widget build(BuildContext context) {
+     final user = _authService.getCurrentUser();
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.
-      where('is_for_today', isEqualTo: true)
+      stream: _tasksCollection
+      .where('userId', isEqualTo: user?.uid)
+      .where('is_for_today', isEqualTo: true)
       .where('completed', isEqualTo: false)
       .snapshots(),
       builder: (context, snapshot) {
@@ -53,7 +56,7 @@ class _TasksPageState extends State<ForTodayPage> {
             return TaskItem(
               title: taskTitle,
               description: taskDescription,
-              deadline: taskDeadline ?? DateTime.now(),
+              deadline: taskDeadline,
              // Добавьте другие поля из вашей коллекции tasks
              toLeft: (){
                 _tasksCollection

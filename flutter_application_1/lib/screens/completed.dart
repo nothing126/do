@@ -1,8 +1,9 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unnecessary_import
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/services/firebase_auth.dart';
 import '../widgets/task_item.dart';
 
 class CompletedPage extends StatefulWidget {
@@ -16,11 +17,16 @@ class CompletedPage extends StatefulWidget {
 class _TasksPageState extends State<CompletedPage> {
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
+      final _authService = AuthenticationService();
 
   @override
   Widget build(BuildContext context) {
+     final user = _authService.getCurrentUser();
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.where('completed', isEqualTo: true).snapshots(),
+      stream: _tasksCollection
+      .where('completed', isEqualTo: true)
+      .where('userId', isEqualTo: user?.uid)
+      .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));

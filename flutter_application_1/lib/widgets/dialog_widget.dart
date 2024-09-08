@@ -3,6 +3,7 @@
 
 import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,12 +14,14 @@ class DialogWidget extends StatefulWidget {
     this.deadline,
     this.title,
     this.taskId, // ID задачи для редактирования
+    required this.user, // Add user parameter
   });
 
   final String? description;
   final DateTime? deadline;
   final String? title;
   final String? taskId; // ID задачи для редактирования
+  final User? user; // Add user parameter
 
   @override
   State<DialogWidget> createState() => _DialogWidgetState();
@@ -130,12 +133,13 @@ class _DialogWidgetState extends State<DialogWidget> {
                         });
                       } else {
                         // Создание новой задачи
-                        await tasksCollection.add({
+                          await tasksCollection.add({
                           'title': _title,
                           'description': _description,
                           'deadline': _deadline,
                           'completed': false,
                           'is_for_today': false,
+                          'userId': widget.user?.uid, // Use widget.user here
                         });
                       }
 

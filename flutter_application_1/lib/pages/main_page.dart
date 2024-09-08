@@ -10,6 +10,7 @@ import 'package:flutter_application_1/screens/profile.dart';
 import 'package:flutter_application_1/theme/theme.dart';
 import 'package:flutter_application_1/widgets/dialog_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/services/firebase_auth.dart'; // Import AuthenticationService
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -20,12 +21,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  final _authService = AuthenticationService(); // Create the instance here
 
   static const List<Widget> _widgetOptions = <Widget>[
     TasksPage(),
     ForTodayPage(),
     CompletedPage(),
-    //ProfilePage(), // Используем ProfilePage для 4-го элемента
   ];
 
   void _onItemTapped(int index) {
@@ -34,7 +35,9 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-void _showAddTaskDialog() {
+  void _showAddTaskDialog() {
+    final user = _authService.getCurrentUser(); // Get the user here
+
     showDialog(
       context: context,
       builder: (context) {
@@ -46,10 +49,11 @@ void _showAddTaskDialog() {
           title: _title,
           description: _description,
           deadline: _deadline,
+          user: user, // Pass the user object
         );
       },
     );
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +61,19 @@ void _showAddTaskDialog() {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Прозрачный AppBar
-        elevation: 0, 
+        elevation: 0,
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
-          }, 
-          icon: const Icon(Icons.person_2), color: Colors.white,)
-        ],// Убираем тень
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_2),
+            color: Colors.white,
+          )
+        ], // Убираем тень
       ),
       body: Container(
         // Добавляем Container для градиента
